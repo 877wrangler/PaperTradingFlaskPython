@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <h1>Quotes</h1>
+    <form action="/quote" method="post">
+        <div class="mb-3">
+            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="quote" name="quote" placeholder="Ticker" type="text">
+        </div>
+        <button class="btn btn-primary" type="submit">Receive Quote</button>
+        {% if ticker and latest_price %}
+            <h3>{{ ticker }} latest price: ${{ latest_price }}</h3>
+        {% endif %}
+    </form>
+</body>
+</html>
