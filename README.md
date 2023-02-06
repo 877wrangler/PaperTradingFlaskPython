@@ -1,0 +1,1 @@
+An application for using "fake" money to trade stocks.
