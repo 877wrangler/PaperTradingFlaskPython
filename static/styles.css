@@ -1,0 +1,29 @@
+nav .navbar-brand
+{
+    font-size: xx-large;
+}
+
+nav .navbar-brand .red
+{
+    color: #ea433b;
+}
+
+.account_header,
+.account_body {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+th {
+    flex: 1;
+    background-color: #04AA6D;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+table {
+    width: 1000px;
+}
+
