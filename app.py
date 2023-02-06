@@ -23,8 +23,8 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Open database
-conn = sqlite3.connect("database.db")
-cursor = conn.cursor()
+
+
 
 @app.route("/")
 # @login_required
@@ -42,20 +42,23 @@ def index():
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    """Register user"""
     register_username = request.form.get("register_username")
     register_password = request.form.get("register_password")
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
 
     if request.method == "POST":
         # Check if the username exists
-        username_exists = cursor.execute("SELECT username FROM users WHERE username = ?", (register_username))
+        username_exists = cursor.execute("SELECT username FROM users WHERE username = ?", (register_username,)).fetchone()
+        print(username_exists)
 
         # If the username doesn't exist, hash the password and insert the data
         if not username_exists:
             password_hash = generate_password_hash(register_password)
             print(password_hash)
-            cursor.execute("INSERT INTO users (username, hash, cash) VALUES (?, ?, ?)", register_username, password_hash, 10000)
+            cursor.execute("INSERT INTO users (username, hash, cash) VALUES (?, ?, ?)", (register_username, password_hash, 10000))
             conn.commit()
+            conn.close()
             return redirect("/login")
 
     return render_template("register.html")
