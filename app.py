@@ -7,6 +7,7 @@ from flask_session import Session
 import os
 import sqlite3
 from dotenv import load_dotenv
+from helpers import lookup
 
 # Get API
 dotenv_path = "C:/Users/Randy/PycharmProjects/FlashPythonPaperTrading/api.env"
@@ -102,6 +103,40 @@ def login():
     else:
         return render_template("login.html")
 
+@app.route("/buy", methods=["GET", "POST"])
+# @login_required
+def buy():
+    """Buy shares of stock"""
+    ticker = request.form.get("ticker")
+    amount = request.form.get("amount")
+
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+    cursor.execute("SELECT cash FROM users WHERE id = ?", (session["user_id"],))
+    balance = cursor.fetchone()
+    cash = balance[0]
+
+    if request.method == "POST":
+        # If quote is not empty
+
+        if request.form.get("ticker") and lookup(ticker):
+            print(lookup(ticker))
+            latest_price = lookup(ticker)['price']
+            cost = latest_price * int(amount)
+            time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            if cost <= cash:
+                cursor.execute("INSERT INTO account (ticker, shares, cost, time, user_id) VALUES (?, ?, ?, ?, ?)",
+                               (ticker.upper(), amount, cost, time, session["user_id"]))
+                cursor.execute("UPDATE users SET cash = cash - ? WHERE id = ?", (cost, session["user_id"]))
+                cash -= cost
+                conn.commit()
+            conn.close()
+            return render_template("buy.html", cash=cash)
+        else:
+            return render_template("error.html")
+
+
+    return render_template("buy.html", cash=cash)
 
 
 @app.route("/quote", methods=["GET", "POST"])
